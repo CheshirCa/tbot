@@ -45,7 +45,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
   Systemd Service (Auto-start):
   Create /etc/systemd/system/mikrotik-bot.service:
 
-  [Unit]
+  ```[Unit]
   Description=MikroTik Telegram Bot
   After=network.target
 
@@ -56,21 +56,21 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
   Restart=always
 
   [Install]
-  WantedBy=multi-user.target
+  WantedBy=multi-user.target```
 
   Enable service:
-  sudo systemctl daemon-reload
+ ``` sudo systemctl daemon-reload
   sudo systemctl enable mikrotik-bot
-  sudo systemctl start mikrotik-bot
+  sudo systemctl start mikrotik-bot```
 
 • Windows Installation:
   1. Install Python 3.10+ from python.org
   2. Install dependencies:
      pip install python-telegram-bot paramiko cryptography
   3. Create startup script (start_bot.bat):
-     @echo off
+     ```@echo off
      cd C:\mikrotik_bot
-     python tbot.py
+     python tbot.py```
 
 === 3. SSH Key Setup ===
 
@@ -88,7 +88,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
 === 4. Configuration ===
 
 Edit tbot.py with your settings:
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+```TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 MIKROTIK_IP = "192.168.0.1"
 MIKROTIK_USER = "tbot"
 SSH_KEY_PATH = "/path/to/your/private_key"
@@ -96,7 +96,7 @@ REBOOT_PASSWORD = "secure_password_here"
 ALLOWED_USERS = {
     111111111: "Admin",
     "username": "Operator"
-}
+}```
 
 === 5. Running the Bot ===
 
