@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкция по установке Telegram бота для MikroTik</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            background-color: #eaf2f8;
+            padding: 8px 12px;
+            border-left: 4px solid #3498db;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 12px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 3px solid #3498db;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        .toc {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .toc ul {
+            padding-left: 20px;
+        }
+        .command {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Инструкция по установке Telegram бота для управления MikroTik</h1>
+
+    <div class="toc">
+        <h2>Оглавление</h2>
+        <ul>
+            <li><a href="#telegram-prep">1. Подготовка в Telegram</a></li>
+            <li><a href="#linux-install">2. Установка на Linux</a></li>
+            <li><a href="#windows-install">3. Установка на Windows</a></li>
+            <li><a href="#ssh-setup">4. Настройка SSH-ключей для MikroTik</a></li>
+            <li><a href="#troubleshooting">5. Основные ошибки и их решение</a></li>
+            <li><a href="#running">6. Запуск и тестирование бота</a></li>
+        </ul>
+    </div>
+
+    <h2 id="telegram-prep">1. Подготовка в Telegram</h2>
+
+    <h3>1.1 Создание бота и получение токена</h3>
+    <ol>
+        <li>Откройте Telegram и найдите бота <code>@BotFather</code></li>
+        <li>Отправьте команду <code>/newbot</code></li>
+        <li>Укажите имя бота (отображаемое имя, например "MikroTik Manager")</li>
+        <li>Укажите username бота (должен заканчиваться на <code>bot</code>, например <code>MikroTikManagerBot</code>)</li>
+        <li>Получите токен вида <code>123456789:ABCdefGHIJKlmNoPQRsTUVwxyZ-abcdef123</code></li>
+    </ol>
+
+    <div class="note">
+        <strong>Важно!</strong> Сохраните токен в надежном месте - это ваш пароль к боту
+    </div>
+
+    <h3>1.2 Настройка прав доступа</h3>
+    <ol>
+        <li>В том же <code>@BotFather</code> выберите созданного бота</li>
+        <li>Отключите режим приватности командой <code>/setprivacy</code> → выберите бота → <code>Disable</code></li>
+        <li>Добавьте описание бота командой <code>/setdescription</code></li>
+        <li>Добавьте список команд командой <code>/setcommands</code>:
+            <pre>
+start - Запустить бот</pre>
+        </li>
+    </ol>
+
+    <h2 id="linux-install">2. Установка на Linux (Ubuntu/Debian)</h2>
+
+    <h3>2.1 Установка зависимостей</h3>
+    <pre>
+<span class="command"># Обновление системы</span>
+sudo apt update && sudo apt upgrade -y
+
+<span class="command"># Установка Python и pip</span>
+sudo apt install python3 python3-pip python3-venv -y
+
+<span class="command"># Установка SSH-клиента и зависимостей для Paramiko</span>
+sudo apt install libffi-dev libssl-dev -y</pre>
+
+    <h3>2.2 Настройка виртуального окружения</h3>
+    <pre>
+<span class="command"># Создаем папку для бота</span>
+mkdir ~/mikrotik_bot && cd ~/mikrotik_bot
+
+<span class="command"># Создаем виртуальное окружение</span>
+python3 -m venv venv
+source venv/bin/activate
+
+<span class="command"># Устанавливаем зависимости</span>
+pip install python-telegram-bot paramiko cryptography</pre>
+
+    <h3>2.3 Настройка файла конфигурации</h3>
+    <ol>
+        <li>Создайте файл <code>tbot.py</code> и вставьте код бота</li>
+        <li>Замените в коде:
+            <ul>
+                <li><code>TOKEN</code> на полученный от BotFather</li>
+                <li>Остальные параметры MikroTik на свои</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>2.4 Создание systemd службы (для автозапуска)</h3>
+    <pre>
+sudo nano /etc/systemd/system/mikrotik-bot.service</pre>
+    <p>Содержимое файла:</p>
+    <pre>
+[Unit]
+Description=MikroTik Telegram Bot
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/mikrotik_bot
+ExecStart=/home/ubuntu/mikrotik_bot/venv/bin/python3 /home/ubuntu/mikrotik_bot/tbot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</pre>
+
+    <p>Активация службы:</p>
+    <pre>
+sudo systemctl daemon-reload
+sudo systemctl enable mikrotik-bot
+sudo systemctl start mikrotik-bot</pre>
+
+    <h2 id="windows-install">3. Установка на Windows</h2>
+
+    <h3>3.1 Установка Python</h3>
+    <ol>
+        <li>Скачайте Python 3.10+ с <a href="https://www.python.org/downloads/" target="_blank">официального сайта</a></li>
+        <li>При установке отметьте "Add Python to PATH"</li>
+        <li>Проверьте установку: <code>python --version</code> в cmd</li>
+    </ol>
+
+    <h3>3.2 Установка зависимостей</h3>
+    <pre>
+pip install python-telegram-bot paramiko cryptography</pre>
+
+    <h3>3.3 Настройка бота</h3>
+    <ol>
+        <li>Создайте папку для бота (например <code>C:\mikrotik_bot</code>)</li>
+        <li>Создайте файл <code>tbot.py</code> с кодом бота</li>
+        <li>Замените параметры в коде на свои</li>
+    </ol>
+
+    <h3>3.4 Запуск бота</h3>
+    <pre>
+cd C:\mikrotik_bot
+python tbot.py</pre>
+
+    <h3>3.5 Автозапуск (опционально)</h3>
+    <ol>
+        <li>Создайте файл <code>start_bot.bat</code> с содержимым:
+            <pre>
+@echo off
+cd C:\mikrotik_bot
+python tbot.py</pre>
+        </li>
+        <li>Добавьте его в автозагрузку через <code>Win+R</code> → <code>shell:startup</code></li>
+    </ol>
+
+    <h2 id="ssh-setup">4. Настройка SSH-ключей для MikroTik</h2>
+
+    <h3>4.1 Генерация ключей</h3>
+    <p><strong>На Linux:</strong></p>
+    <pre>
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/mikrotik_bot_key</pre>
+
+    <p><strong>На Windows:</strong></p>
+    <ol>
+        <li>Установите Git for Windows (включает ssh)</li>
+        <li>Выполните в Git Bash:
+            <pre>
+ssh-keygen -t rsa -b 4096 -f /c/Users/ВашПользователь/.ssh/mikrotik_bot_key</pre>
+        </li>
+    </ol>
+
+    <h3>4.2 Настройка MikroTik</h3>
+    <ol>
+        <li>Подключитесь к MikroTik через Winbox/Terminal</li>
+        <li>Импортируйте публичный ключ:
+            <pre>
+/user ssh-keys import public-key-file=bot_key.pub user=tbot</pre>
+        </li>
+        <li>Настройте пользователя:
+            <pre>
+/user add name=tbot group=full disabled=no
+/user ssh-keys import public-key-file=bot_key.pub user=tbot</pre>
+        </li>
+        <li>Ограничьте доступ по SSH только для этого пользователя:
+            <pre>
+/ip service set ssh disabled=no port=22 address=192.168.0.0/24</pre>
+        </li>
+    </ol>
+
+    <h3>4.3 Проверка подключения</h3>
+    <pre>
+ssh -i ~/.ssh/mikrotik_bot_key tbot@192.168.0.1</pre>
+
+    <h2 id="troubleshooting">5. Основные ошибки и их решение</h2>
+
+    <h3>5.1 Ошибки подключения к Telegram</h3>
+    <p><strong>Симптомы:</strong> Бот не отвечает, ошибки типа "Unauthorized" или "ConnectionError"</p>
+    <p><strong>Решение:</strong></p>
+    <ul>
+        <li>Проверьте правильность токена</li>
+        <li>Убедитесь, что бот не в режиме приватности</li>
+        <li>Проверьте интернет-соединение сервера</li>
+        <li>Попробуйте использовать прокси (если в вашей стране ограничен Telegram)</li>
+    </ul>
+
+    <h3>5.2 Ошибки SSH-подключения к MikroTik</h3>
+    <p><strong>Симптомы:</strong> "Authentication failed" или "Connection refused"</p>
+    <p><strong>Решение:</strong></p>
+    <ul>
+        <li>Проверьте путь к SSH-ключу в настройках</li>
+        <li>Убедитесь, что ключ добавлен в MikroTik</li>
+        <li>Проверьте, что пользователь <code>tbot</code> имеет права на выполнение команд</li>
+        <li>Убедитесь, что SSH включен на MikroTik</li>
+    </ul>
+
+    <h3>5.3 Ошибки зависимостей</h3>
+    <p><strong>Симптомы:</strong> "ModuleNotFoundError"</p>
+    <p><strong>Решение:</strong></p>
+    <pre>
+<span class="command"># Переустановите зависимости</span>
+pip uninstall python-telegram-bot paramiko cryptography
+pip install python-telegram-bot paramiko cryptography</pre>
+
+    <h3>5.4 Ошибки при выполнении команд</h3>
+    <p><strong>Симптомы:</strong> Бот отвечает "Ошибка: ..."</p>
+    <p><strong>Решение:</strong></p>
+    <ul>
+        <li>Проверьте логи бота (<code>logs/bot.log</code>)</li>
+        <li>Убедитесь, что команды поддерживаются вашей версией RouterOS</li>
+        <li>Проверьте права пользователя <code>tbot</code> на MikroTik</li>
+    </ul>
+
+    <div class="warning">
+        <strong>Важно!</strong> После первой настройки рекомендуется сменить пароль для перезагрузки в настройках бота (переменная <code>REBOOT_PASSWORD</code>).
+    </div>
+
+    <h2 id="running">6. Запуск и тестирование бота</h2>
+    <ol>
+        <li>Запустите бота:
+            <ul>
+                <li>Linux: <code>sudo systemctl start mikrotik-bot</code></li>
+                <li>Windows: <code>python tbot.py</code></li>
+            </ul>
+        </li>
+        <li>Проверьте логи:
+            <pre>
+tail -f logs/bot.log  <span class="command"># Linux</span>
+type logs\bot.log      <span class="command"># Windows</span></pre>
+        </li>
+        <li>Напишите боту в Telegram команду <code>/start</code> - должно появиться меню</li>
+        <li>Протестируйте все функции:
+            <ul>
+                <li>Просмотр интерфейсов</li>
+                <li>Проверка ping</li>
+                <li>Просмотр ресурсов</li>
+                <li>Перезагрузка (с подтверждением пароля)</li>
+            </ul>
+        </li>
+        <li>Для остановки бота:
+            <ul>
+                <li>Linux: <code>sudo systemctl stop mikrotik-bot</code></li>
+                <li>Windows: Ctrl+C в окне командной строки</li>
+            </ul>
+        </li>
+    </ol>
+</body>
+</html>
