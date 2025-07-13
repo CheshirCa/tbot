@@ -3,7 +3,7 @@
 
 A Telegram bot for managing MikroTik routers via SSH with secure key-based authentication.
 
-=== Table of Contents ===
+### === Table of Contents ===
 1. Telegram Setup
 2. Installation
    - Linux
@@ -13,7 +13,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
 5. Running the Bot
 6. Troubleshooting
 
-=== 1. Telegram Setup ===
+### === 1. Telegram Setup ===
 
 • Create a New Bot:
   1. Open Telegram and find @BotFather
@@ -29,7 +29,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
   /setdescription - Add bot description
   /setcommands - Add supported commands
 ```
-=== 2. Installation ===
+### === 2. Installation ===
 
 • Linux Installation:
   
@@ -79,7 +79,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
      cd C:\mikrotik_bot
      python tbot.py
 ```
-=== 3. SSH Key Setup ===
+### === 3. SSH Key Setup ===
 
 • Generate SSH Keys:
 ```
@@ -95,7 +95,7 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
 ```
   ssh -i ~/.ssh/mikrotik_bot_key tbot@192.168.0.1
 ```
-=== 4. Configuration ===
+### === 4. Configuration ===
 
 Edit tbot.py with your settings:
 ```
@@ -109,7 +109,7 @@ ALLOWED_USERS = {
     "username": "Operator"
 }
 ```
-=== 5. Running the Bot ===
+### === 5. Running the Bot ===
 
 • Linux:
 ```
@@ -121,7 +121,7 @@ ALLOWED_USERS = {
 ```
   python tbot.py  # Run manually
 ```
-=== 6. Troubleshooting ===
+### === 6. Troubleshooting ===
 
 • Telegram connection issues: Verify token, check internet connection
 
@@ -132,4 +132,4 @@ ALLOWED_USERS = {
 • Command not working: Check RouterOS version compatibility
 
 
-IMPORTANT: Always change the default reboot password after setup!
+# IMPORTANT: Always change the default reboot password after setup!
