@@ -1,5 +1,5 @@
 # tbot
-Telegram Bot for MikroTik Management
+## Telegram Bot for MikroTik Management
 
 A Telegram bot for managing MikroTik routers via SSH with secure key-based authentication.
 
@@ -24,27 +24,30 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
   4. Save your bot token (format: 123456789:ABCdefGHIJKlmNoPQRsTUVwxyZ-abcdef123)
 
 • Configure Bot Settings:
+```
   /setprivacy - Disable for command access
   /setdescription - Add bot description
   /setcommands - Add supported commands
-  
+```
 === 2. Installation ===
 
 • Linux Installation:
   
   Install Dependencies:
+```
   sudo apt update && sudo apt upgrade -y
   sudo apt install python3 python3-pip python3-venv libffi-dev libssl-dev -y
-
+```
   Setup Virtual Environment:
+```
   mkdir ~/mikrotik_bot && cd ~/mikrotik_bot
   python3 -m venv venv
   source venv/bin/activate
   pip install python-telegram-bot paramiko cryptography
-
+```
   Systemd Service (Auto-start):
   Create /etc/systemd/system/mikrotik-bot.service:
-
+```
   [Unit]
   Description=MikroTik Telegram Bot
   After=network.target
@@ -57,37 +60,45 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
 
   [Install]
   WantedBy=multi-user.target
-
+```
   Enable service:
+```
   sudo systemctl daemon-reload
   sudo systemctl enable mikrotik-bot
   sudo systemctl start mikrotik-bot
-
+```
 • Windows Installation:
   1. Install Python 3.10+ from python.org
   2. Install dependencies:
+```
      pip install python-telegram-bot paramiko cryptography
+```
   3. Create startup script (start_bot.bat):
+```
      @echo off
      cd C:\mikrotik_bot
      python tbot.py
-
+```
 === 3. SSH Key Setup ===
 
 • Generate SSH Keys:
+```
   ssh-keygen -t rsa -b 4096 -f ~/.ssh/mikrotik_bot_key
-
+```
 • Configure MikroTik:
+```
   /user add name=tbot group=full disabled=no
   /user ssh-keys import public-key-file=bot_key.pub user=tbot
   /ip service set ssh disabled=no port=22 address=192.168.0.0/24
-
+```
 • Test Connection:
+```
   ssh -i ~/.ssh/mikrotik_bot_key tbot@192.168.0.1
-
+```
 === 4. Configuration ===
 
 Edit tbot.py with your settings:
+```
 TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 MIKROTIK_IP = "192.168.0.1"
 MIKROTIK_USER = "tbot"
@@ -97,17 +108,19 @@ ALLOWED_USERS = {
     111111111: "Admin",
     "username": "Operator"
 }
-
+```
 === 5. Running the Bot ===
 
 • Linux:
+```
   sudo systemctl start mikrotik-bot  # Start
   sudo systemctl stop mikrotik-bot   # Stop
   tail -f logs/bot.log              # View logs
-
+```
 • Windows:
+```
   python tbot.py  # Run manually
-
+```
 === 6. Troubleshooting ===
 
 • Telegram connection issues: Verify token, check internet connection
