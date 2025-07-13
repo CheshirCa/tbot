@@ -24,9 +24,9 @@ A Telegram bot for managing MikroTik routers via SSH with secure key-based authe
   4. Save your bot token (format: 123456789:ABCdefGHIJKlmNoPQRsTUVwxyZ-abcdef123)
 
 • Configure Bot Settings:
-  /setprivacy - Disable for command access
+```  /setprivacy - Disable for command access
   /setdescription - Add bot description
-  /setcommands - Add supported commands
+  /setcommands - Add supported commands```
 
 === 2. Installation ===
 
