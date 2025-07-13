@@ -124,8 +124,12 @@ ALLOWED_USERS = {
 === 6. Troubleshooting ===
 
 • Telegram connection issues: Verify token, check internet connection
+
 • SSH authentication failed: Verify key path, check MikroTik user permissions
+
 • Module not found: Run pip install -r requirements.txt
+
 • Command not working: Check RouterOS version compatibility
+
 
 IMPORTANT: Always change the default reboot password after setup!
